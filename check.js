@@ -92,15 +92,9 @@ async function sendDiscord(channel) {
 
   const embed = {
     description: [
-      "## ✨ ¡YA ESTAMOS EN DIRECTO!",
+      "## 👀 ¡TE ESPERO EN EL DIRECTO!",
       "",
-      "La espera ha terminado. 💙",
-      "Pásate por el chat, saluda y disfruta del stream con toda la comunidad.",
-      "",
-      "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
-      "",
-      "### 👇 ¡TE ESPERAMOS DENTRO!",
-      "> Entra al directo y forma parte de la comunidad de Hugx Tattoo.",
+      "Si entras al ver este mensaje escribe 'Discord' para saber que vienes de aquí!",
     ].join("\n"),
 
     // Se conserva tu color original.
@@ -118,7 +112,7 @@ async function sendDiscord(channel) {
         : []),
 
       {
-        name: "🕒 AVISO ENVIADO",
+        name: "🔔 NOTIFICACIÓN ENVIADA",
         value: `<t:${sentUnix}:R>`,
         inline: true,
       },
@@ -126,10 +120,6 @@ async function sendDiscord(channel) {
     
     image: {
       url: THUMB_URL,
-    },
-
-    footer: {
-      text: "https://kick.com/HugxTattoo",
     },
 
     timestamp: new Date().toISOString(),
