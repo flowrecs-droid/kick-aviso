@@ -58,6 +58,11 @@ async function sendDiscord(channel) {
   const title = channel.stream_title || "¡Directo en marcha!";
   const viewers = typeof stream.viewer_count === "number" ? stream.viewer_count : 0;
 
+  // Miniatura del stream (con parámetro para evitar la caché de Discord)
+  const thumb = stream.thumbnail
+    ? `${stream.thumbnail}${stream.thumbnail.includes("?") ? "&" : "?"}t=${Date.now()}`
+    : null;
+
   const embed = {
     author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO AHORA`, url },
     title: `🖋️ ${title}`,
@@ -67,7 +72,10 @@ async function sendDiscord(channel) {
       `> Pásate por el chat, saluda y disfruta del stream con la comunidad.`,
     color: 0x53fc18,
     fields: [],
-    footer: { text: "Hugx Tattoo • Directo en Kick" },
+    footer: {
+      text: "Hugx Tattoo • Directo en Kick",
+      ...(thumb ? { icon_url: thumb } : {}),
+    },
     timestamp: new Date().toISOString(),
   };
 
@@ -77,8 +85,7 @@ async function sendDiscord(channel) {
     embed.fields.push({ name: "👀 Viendo ahora", value: `**${viewers}**`, inline: true });
   embed.fields.push({ name: "📺 Plataforma", value: "**Kick**", inline: true });
 
-  if (stream.thumbnail)
-    embed.image = { url: `${stream.thumbnail}${stream.thumbnail.includes("?") ? "&" : "?"}t=${Date.now()}` };
+  if (thumb) embed.image = { url: thumb };
 
   const payload = {
     username: "Hugx Tattoo Avisos",
@@ -88,7 +95,7 @@ async function sendDiscord(channel) {
       {
         type: 1,
         components: [
-          { type: 2, style: 5, label: "Ir al stream", emoji: { name: "↪" }, url },
+          { type: 2, style: 5, label: "Ir al stream", emoji: { name: "🟢" }, url },
         ],
       },
     ],
@@ -97,7 +104,6 @@ async function sendDiscord(channel) {
 
   let res = await postToDiscord(payload);
 
-  // Si Discord rechaza el botón, reenvía sin él para no perder el aviso
   if (!res.ok && res.status === 400) {
     console.warn(`Botón rechazado (${await res.text()}), reenviando sin botón`);
     delete payload.components;
