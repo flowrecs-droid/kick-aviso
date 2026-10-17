@@ -27,7 +27,10 @@ async function getToken() {
     }),
   });
 
-  if (!res.ok) throw new Error(`Token Kick: ${res.status} ${await res.text()}`);
+  if (!res.ok) {
+    throw new Error(`Token Kick: ${res.status} ${await res.text()}`);
+  }
+
   return (await res.json()).access_token;
 }
 
@@ -42,12 +45,17 @@ async function getChannel(token) {
     }
   );
 
-  if (!res.ok) throw new Error(`Canal Kick: ${res.status} ${await res.text()}`);
+  if (!res.ok) {
+    throw new Error(`Canal Kick: ${res.status} ${await res.text()}`);
+  }
 
   const json = await res.json();
   const channel = Array.isArray(json.data) ? json.data[0] : json.data;
 
-  if (!channel) throw new Error(`No se encontró el canal ${SLUG}`);
+  if (!channel) {
+    throw new Error(`No se encontró el canal ${SLUG}`);
+  }
+
   return channel;
 }
 
@@ -67,22 +75,11 @@ async function sendDiscord(channel) {
   const url = `https://kick.com/${SLUG}`;
   const title = channel.stream_title || "Directo en vivo";
 
-  // Se mantiene tu miniatura original.
+  // Tu miniatura original.
   const THUMB_URL =
     "https://raw.githubusercontent.com/flowrecs-droid/kick-aviso/main/miniatura.png";
 
-  // Datos del directo.
-  const startMs = stream.start_time
-    ? new Date(stream.start_time).getTime()
-    : NaN;
-
-  const startUnix = Math.floor(
-    (Number.isFinite(startMs) ? startMs : Date.now()) / 1000
-  );
-
-  // No mostrar espectadores si la API no proporciona el dato.
-
-  // Evitar que caracteres especiales rompan el título Markdown.
+  // Escapar caracteres especiales del título.
   const safeTitle = String(title)
     .replace(/\\/g, "\\\\")
     .replace(/\*/g, "\\*")
@@ -90,7 +87,22 @@ async function sendDiscord(channel) {
     .replace(/`/g, "\\`")
     .replace(/\|/g, "\\|");
 
+  const viewers = Number(
+    stream.viewer_count ?? stream.viewers ?? channel.viewer_count ?? 0
+  );
+
+  // Momento en el que se prepara el aviso.
+  const sentUnix = Math.floor(Date.now() / 1000);
+
   const embed = {
+    author: {
+      name: "🔴 HUGX TATTOO • DIRECTO EN KICK",
+      url,
+    },
+
+    title: `🎬 ${safeTitle}`,
+    url,
+
     description: [
       "## ✨ ¡YA ESTAMOS EN DIRECTO!",
       "",
@@ -103,33 +115,46 @@ async function sendDiscord(channel) {
       "> Entra al directo y forma parte de la comunidad de Hugx Tattoo.",
     ].join("\n"),
 
-    // Color original conservado.
+    // Se conserva tu color original.
     color: 0x000658,
 
     fields: [
       ...(channel.category?.name
-        ? [{
-            name: "🎮  CATEGORÍA",
-            value: `\`${channel.category.name}\``,
-            inline: true,
-          }]
+        ? [
+            {
+              name: "🎮 CATEGORÍA",
+              value: `**${channel.category.name}**`,
+              inline: true,
+            },
+          ]
         : []),
 
-      {,
-        {
-  name: "🕒  AVISO ENVIADO",
-  value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
-  inline: true,
-      },
-    ],
+      ...(viewers > 0
+        ? [
+            {
+              name: "👀 VIENDO AHORA",
+              value: `**${viewers.toLocaleString("es-ES")}** espectadores`,
+              inline: true,
+            },
+          ]
+        : []),
+
       {
-        name: "💬  CHAT EN VIVO",
+        name: "🕒 AVISO ENVIADO",
+        value: `<t:${sentUnix}:R>`,
+        inline: true,
+      },
+
+      {
+        name: "💬 CHAT EN VIVO",
         value: `[**Entrar y saludar ↗**](${url})`,
         inline: false,
       },
     ],
 
-    image: { url: THUMB_URL },
+    image: {
+      url: THUMB_URL,
+    },
 
     footer: {
       text: "Hugx Tattoo • Directo en Kick 💙",
@@ -164,7 +189,7 @@ async function sendDiscord(channel) {
       parse: MENTION.includes("@everyone")
         ? ["everyone"]
         : MENTION.includes("@here")
-          ? ["everyone", "here"]
+          ? ["here"]
           : [],
     },
   };
@@ -173,7 +198,10 @@ async function sendDiscord(channel) {
 
   if (!res.ok && res.status === 400) {
     const error = await res.text();
-    console.warn(`Botón o componentes rechazados (${error}). Reintentando sin botón.`);
+
+    console.warn(
+      `Error al enviar el botón o el embed (${error}). Reintentando sin botón.`
+    );
 
     delete payload.components;
     res = await postToDiscord(payload);
@@ -202,6 +230,8 @@ if (FORCE) {
   console.log("Aviso enviado");
 }
 
-if (!FORCE) state.live = isLive;
+if (!FORCE) {
+  state.live = isLive;
+}
 
 writeFileSync(STATE_FILE, JSON.stringify(state, null, 2) + "\n");
