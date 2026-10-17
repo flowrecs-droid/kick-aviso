@@ -58,21 +58,8 @@ async function sendDiscord(channel) {
   const title = channel.stream_title || "¡Directo en marcha!";
   const viewers = typeof stream.viewer_count === "number" ? stream.viewer_count : 0;
 
-  // Miniatura real del stream (puede venir como texto o como objeto)
-  const rawThumb =
-    typeof stream.thumbnail === "string" ? stream.thumbnail : stream.thumbnail?.url || null;
-
-  // Solo en pruebas manuales: imagen de sustitución para poder ver el diseño
-  const testThumb =
-    channel.banner_picture ||
-    `https://placehold.co/1280x720/53fc18/000000.png?text=${encodeURIComponent(SLUG.toUpperCase() + " EN DIRECTO")}`;
-
-  const baseThumb = rawThumb || (FORCE ? testThumb : null);
-  const thumb = baseThumb
-    ? `${baseThumb}${baseThumb.includes("?") ? "&" : "?"}t=${Date.now()}`
-    : null;
-
-  console.log(`Miniatura: ${rawThumb ? "real del stream" : thumb ? "de prueba" : "ninguna"}`);
+  // Tu imagen fija, alojada en este mismo repositorio
+  const THUMB_URL = "https://raw.githubusercontent.com/flowrecs-droid/kick-aviso/main/miniatura.png";
 
   const embed = {
     author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO AHORA`, url },
@@ -83,10 +70,8 @@ async function sendDiscord(channel) {
       `> Pásate por el chat, saluda y disfruta del stream con la comunidad.`,
     color: 0x53fc18,
     fields: [],
-    footer: {
-      text: "Hugx Tattoo • Directo en Kick",
-      ...(thumb ? { icon_url: thumb } : {}),
-    },
+    footer: { text: "Hugx Tattoo • Directo en Kick", icon_url: THUMB_URL },
+    image: { url: THUMB_URL },
     timestamp: new Date().toISOString(),
   };
 
@@ -95,8 +80,6 @@ async function sendDiscord(channel) {
   if (viewers > 0)
     embed.fields.push({ name: "👀 Viendo ahora", value: `**${viewers}**`, inline: true });
   embed.fields.push({ name: "📺 Plataforma", value: "**Kick**", inline: true });
-
-  if (thumb) embed.image = { url: thumb };
 
   const payload = {
     username: "Hugx Tattoo Avisos",
