@@ -122,7 +122,8 @@ async function sendDiscord(channel) {
         value: `<t:${sentUnix}:R>`,
         inline: true,
       },
-
+    ],
+    
     image: {
       url: THUMB_URL,
     },
