@@ -187,23 +187,34 @@ async function sendDiscord(channel) {
 const token = await getToken();
 const channel = await getChannel(token);
 const isLive = Boolean(channel.stream?.is_live);
+const OFFLINE_CHECKS_NEEDED = 2; // comprobaciones seguidas en offline para dar el directo por terminado
+
+state.offlineStreak = state.offlineStreak ?? 0;
 
 console.log(
-  `${SLUG}: ${isLive ? "EN DIRECTO" : "offline"} (antes: ${
-    state.live ? "directo" : "offline"
-  })`
+  `${SLUG}: ${isLive ? "EN DIRECTO" : "offline"} ` +
+  `(estado guardado: ${state.live ? "directo" : "offline"}, offline seguidos: ${state.offlineStreak})`
 );
 
 if (FORCE) {
   await sendDiscord(channel);
   console.log("Aviso de prueba enviado");
-} else if (isLive && !state.live) {
-  await sendDiscord(channel);
-  console.log("Aviso enviado");
-}
-
-if (!FORCE) {
-  state.live = isLive;
+} else if (isLive) {
+  if (!state.live) {
+    await sendDiscord(channel);
+    console.log("Aviso enviado");
+    state.live = true;
+  }
+  state.offlineStreak = 0;
+} else if (state.live) {
+  state.offlineStreak += 1;
+  if (state.offlineStreak >= OFFLINE_CHECKS_NEEDED) {
+    state.live = false;
+    state.offlineStreak = 0;
+    console.log("Directo terminado, listo para el próximo aviso");
+  } else {
+    console.log(`Offline ${state.offlineStreak}/${OFFLINE_CHECKS_NEEDED}, esperando confirmación`);
+  }
 }
 
 writeFileSync(STATE_FILE, JSON.stringify(state, null, 2) + "\n");
