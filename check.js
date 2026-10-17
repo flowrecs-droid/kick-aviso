@@ -72,8 +72,8 @@ async function sendDiscord(channel) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: "Aviso de directo",
-      content: `${MENTION} 🔴 **${SLUG}** acaba de empezar directo, ¡ven a verlo! 👇`.trim(),
+      username: "Hugx Tattoo Avisos",
+      content: `${MENTION} YA ESTAMOS **EN DIRECTO**! ENTRA Y SALUDA 👋🏼💚`.trim(),
       embeds: [embed],
       allowed_mentions: { parse: MENTION ? ["everyone"] : [] },
     }),
