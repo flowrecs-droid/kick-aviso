@@ -68,7 +68,7 @@ async function sendDiscord(channel) {
     description:
       `### 💚 ¡Ya estamos en directo!\n` +
       `> Pásate por el chat, saluda y disfruta del stream con la comunidad.`,
-    color: #000658,
+    color: 000658,
     fields: [],
     footer: { text: "Hugx Tattoo • Directo en Kick", icon_url: THUMB_URL },
     image: { url: THUMB_URL },
