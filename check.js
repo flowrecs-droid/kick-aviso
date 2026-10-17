@@ -58,10 +58,21 @@ async function sendDiscord(channel) {
   const title = channel.stream_title || "¡Directo en marcha!";
   const viewers = typeof stream.viewer_count === "number" ? stream.viewer_count : 0;
 
-  // Miniatura del stream (con parámetro para evitar la caché de Discord)
-  const thumb = stream.thumbnail
-    ? `${stream.thumbnail}${stream.thumbnail.includes("?") ? "&" : "?"}t=${Date.now()}`
+  // Miniatura real del stream (puede venir como texto o como objeto)
+  const rawThumb =
+    typeof stream.thumbnail === "string" ? stream.thumbnail : stream.thumbnail?.url || null;
+
+  // Solo en pruebas manuales: imagen de sustitución para poder ver el diseño
+  const testThumb =
+    channel.banner_picture ||
+    `https://placehold.co/1280x720/53fc18/000000.png?text=${encodeURIComponent(SLUG.toUpperCase() + " EN DIRECTO")}`;
+
+  const baseThumb = rawThumb || (FORCE ? testThumb : null);
+  const thumb = baseThumb
+    ? `${baseThumb}${baseThumb.includes("?") ? "&" : "?"}t=${Date.now()}`
     : null;
+
+  console.log(`Miniatura: ${rawThumb ? "real del stream" : thumb ? "de prueba" : "ninguna"}`);
 
   const embed = {
     author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO AHORA`, url },
