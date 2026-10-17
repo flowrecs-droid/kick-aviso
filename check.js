@@ -61,17 +61,23 @@ async function sendDiscord(channel) {
   // Tu imagen fija, alojada en este mismo repositorio
   const THUMB_URL = "https://raw.githubusercontent.com/flowrecs-droid/kick-aviso/main/miniatura.png";
 
+  // Hora de inicio del directo (para mostrar "hace X minutos")
+  const startMs = stream.start_time ? new Date(stream.start_time).getTime() : NaN;
+  const startUnix = Math.floor((Number.isFinite(startMs) ? startMs : Date.now()) / 1000);
+
   const embed = {
-    author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO AHORA`, url },
+    author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO EN KICK`, url },
     title: `🖋️ ${title}`,
     url,
     description:
       `### 💚 ¡Ya estamos en directo!\n` +
-      `> Pásate por el chat, saluda y disfruta del stream con la comunidad.`,
-    color: 0x000658,
+      `> Pásate por el chat, saluda y disfruta del stream con la comunidad.\n` +
+      `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n` +
+      `-# ✨ Entra ahora y no te pierdas nada`,
+    color: 0x53fc18,
     fields: [],
-    footer: { text: "Hugx Tattoo • Directo en Kick", icon_url: THUMB_URL },
     image: { url: THUMB_URL },
+    footer: { text: "Hugx Tattoo • Directo en Kick", icon_url: THUMB_URL },
     timestamp: new Date().toISOString(),
   };
 
@@ -79,7 +85,8 @@ async function sendDiscord(channel) {
     embed.fields.push({ name: "🎮 Categoría", value: `**${channel.category.name}**`, inline: true });
   if (viewers > 0)
     embed.fields.push({ name: "👀 Viendo ahora", value: `**${viewers}**`, inline: true });
-  embed.fields.push({ name: "📺 Plataforma", value: "**Kick**", inline: true });
+  embed.fields.push({ name: "⏱️ Empezó", value: `<t:${startUnix}:R>`, inline: true });
+  embed.fields.push({ name: "💬 Chat", value: `[**Entrar al chat**](${url})`, inline: true });
 
   const payload = {
     username: "Hugx Tattoo Avisos",
