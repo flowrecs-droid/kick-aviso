@@ -1,1 +1,39 @@
+name: Kick live check
 
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Enviar aviso de prueba (true/false)"
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kick-live
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Comprobar directo
+        run: node check.js
+        env:
+          KICK_CLIENT_ID: ${{ secrets.KICK_CLIENT_ID }}
+          KICK_CLIENT_SECRET: ${{ secrets.KICK_CLIENT_SECRET }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          FORCE: ${{ github.event.inputs.force }}
+      - name: Guardar estado
+        run: |
+          git config user.name "kick-bot"
+          git config user.email "kick-bot@users.noreply.github.com"
+          git add state.json
+          git diff --staged --quiet || (git commit -m "estado" && git push)
