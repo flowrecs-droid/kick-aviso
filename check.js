@@ -81,9 +81,6 @@ async function sendDiscord(channel) {
   );
 
   // No mostrar espectadores si la API no proporciona el dato.
-  const viewers = Number(
-    stream.viewer_count ?? stream.viewers ?? channel.viewer_count ?? 0
-  );
 
   // Evitar que caracteres especiales rompan el título Markdown.
   const safeTitle = String(title)
@@ -95,11 +92,11 @@ async function sendDiscord(channel) {
 
   const embed = {
     author: {
-      name: "🔴 HUGX TATTOO  •  DIRECTO EN KICK",
+      name: "HUGX TATTOO @HugxTattoo en Kick",
       url,
     },
 
-    title: `🎬 ${safeTitle}`,
+    title: `${safeTitle}`,
     url,
 
     description: [
@@ -122,14 +119,6 @@ async function sendDiscord(channel) {
         ? [{
             name: "🎮  CATEGORÍA",
             value: `\`${channel.category.name}\``,
-            inline: true,
-          }]
-        : []),
-
-      ...(viewers > 0
-        ? [{
-            name: "👀  VIENDO AHORA",
-            value: `**${viewers.toLocaleString("es-ES")}** espectadores`,
             inline: true,
           }]
         : []),
