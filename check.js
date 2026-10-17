@@ -116,9 +116,10 @@ async function sendDiscord(channel) {
         : []),
 
       {
-        name: "⏱️  EN DIRECTO DESDE",
-        value: new Date().toISOString(),
-        inline: true,
+        {
+          name: "🕒  AVISO ENVIADO",
+          value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
+          inline: true,
       },
 
       {
