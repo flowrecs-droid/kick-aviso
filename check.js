@@ -94,7 +94,7 @@ async function sendDiscord(channel) {
     description: [
       "## 👀 ¡TE ESPERO EN EL DIRECTO!",
       "",
-      "Si entras al ver este mensaje escribe 'Discord' para saber que vienes de aquí!",
+      "Si entras al ver este mensaje escribe 'Discord' en el chat de **Kick** para saber que vienes de aquí!",
     ].join("\n"),
 
     // Se conserva tu color original.
@@ -112,7 +112,7 @@ async function sendDiscord(channel) {
         : []),
 
       {
-        name: "🔔 NOTIFICACIÓN ENVIADA",
+        name: "🔔 **NOTIFICACIÓN ENVIADA**",
         value: `<t:${sentUnix}:R>`,
         inline: true,
       },
