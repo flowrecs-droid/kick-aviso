@@ -91,14 +91,6 @@ async function sendDiscord(channel) {
     .replace(/\|/g, "\\|");
 
   const embed = {
-    author: {
-      name: "HUGX TATTOO @HugxTattoo en Kick",
-      url,
-    },
-
-    title: `${safeTitle}`,
-    url,
-
     description: [
       "## ✨ ¡YA ESTAMOS EN DIRECTO!",
       "",
