@@ -101,23 +101,6 @@ async function sendDiscord(channel) {
     color: 0x000658,
 
     fields: [
-      ...(channel.category?.name
-        ? [
-            {
-              name: "🎮 CATEGORÍA",
-              value: `**${channel.category.name}**`,
-              inline: true,
-            },
-          ]
-        : []),
-
-      {
-        name: "🔔 **NOTIFICACIÓN ENVIADA**",
-        value: `<t:${sentUnix}:R>`,
-        inline: true,
-      },
-    ],
-    
     image: {
       url: THUMB_URL,
     },
