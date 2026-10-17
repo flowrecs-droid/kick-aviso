@@ -100,7 +100,6 @@ async function sendDiscord(channel) {
     // Se conserva tu color original.
     color: 0x000658,
 
-    fields: [
     image: {
       url: THUMB_URL,
     },
