@@ -74,10 +74,10 @@ async function sendDiscord(channel) {
       `> Pásate por el chat, saluda y disfruta del stream con la comunidad.\n` +
       `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n` +
       `-# ✨ Entra ahora y no te pierdas nada`,
-    color: 0x53fc18,
+    color: 0x000658,
     fields: [],
     image: { url: THUMB_URL },
-    footer: { text: "Hugx Tattoo • Directo en Kick", icon_url: THUMB_URL },
+    footer: { text: "Hugx Tattoo • Directo en Kick" },
     timestamp: new Date().toISOString(),
   };
 
@@ -85,7 +85,6 @@ async function sendDiscord(channel) {
     embed.fields.push({ name: "🎮 Categoría", value: `**${channel.category.name}**`, inline: true });
   if (viewers > 0)
     embed.fields.push({ name: "👀 Viendo ahora", value: `**${viewers}**`, inline: true });
-  embed.fields.push({ name: "⏱️ Empezó", value: `<t:${startUnix}:R>`, inline: true });
   embed.fields.push({ name: "💬 Chat", value: `[**Entrar al chat**](${url})`, inline: true });
 
   const payload = {
