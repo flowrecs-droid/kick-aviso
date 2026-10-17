@@ -117,11 +117,10 @@ async function sendDiscord(channel) {
 
       {
         {
-          name: "🕒  AVISO ENVIADO",
-          value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
-          inline: true,
-      },
-
+  name: "🕒  AVISO ENVIADO",
+  value: `<t:${Math.floor(Date.now() / 1000)}:R>`,
+  inline: true,
+},
       {
         name: "💬  CHAT EN VIVO",
         value: `[**Entrar y saludar ↗**](${url})`,
