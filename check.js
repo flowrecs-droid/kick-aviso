@@ -129,7 +129,7 @@ async function sendDiscord(channel) {
     },
 
     footer: {
-      text: "Hugx Tattoo @HugxTattoo en Kick 💚",
+      text: "https://kick.com/HugxTattoo",
     },
 
     timestamp: new Date().toISOString(),
