@@ -41,6 +41,17 @@ async function getChannel(token) {
   return channel;
 }
 
+async function postToDiscord(payload) {
+  // with_components=true permite enviar botones de enlace desde un webhook
+  const hookUrl = new URL(DISCORD_WEBHOOK_URL);
+  hookUrl.searchParams.set("with_components", "true");
+  return fetch(hookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
 async function sendDiscord(channel) {
   const stream = channel.stream || {};
   const url = `https://kick.com/${SLUG}`;
@@ -48,36 +59,50 @@ async function sendDiscord(channel) {
   const viewers = typeof stream.viewer_count === "number" ? stream.viewer_count : 0;
 
   const embed = {
-    author: { name: `🔴 ${SLUG.toUpperCase()} • EN DIRECTO`, url },
-    title,
+    author: { name: `🔴  ${SLUG.toUpperCase()}  •  EN DIRECTO AHORA`, url },
+    title: `🖋️ ${title}`,
     url,
     description:
-      `**¡Ya estoy en directo!** Pásate por el chat y no te pierdas nada 💚\n\n` +
-      `▶️ **[Entrar al directo en Kick](${url})**`,
+      `### 💚 ¡Ya estamos en directo!\n` +
+      `> Pásate por el chat, saluda y disfruta del stream con la comunidad.`,
     color: 0x53fc18,
     fields: [],
-    footer: { text: `Kick • ${SLUG}` },
+    footer: { text: "Hugx Tattoo • Directo en Kick" },
     timestamp: new Date().toISOString(),
   };
 
   if (channel.category?.name)
-    embed.fields.push({ name: "🎮 Jugando a", value: channel.category.name, inline: true });
+    embed.fields.push({ name: "🎮 Categoría", value: `**${channel.category.name}**`, inline: true });
   if (viewers > 0)
-    embed.fields.push({ name: "👀 Viendo ahora", value: String(viewers), inline: true });
+    embed.fields.push({ name: "👀 Viendo ahora", value: `**${viewers}**`, inline: true });
+  embed.fields.push({ name: "📺 Plataforma", value: "**Kick**", inline: true });
+
   if (stream.thumbnail)
     embed.image = { url: `${stream.thumbnail}${stream.thumbnail.includes("?") ? "&" : "?"}t=${Date.now()}` };
-  if (channel.banner_picture) embed.thumbnail = { url: channel.banner_picture };
 
-  const res = await fetch(DISCORD_WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: "Hugx Tattoo Avisos",
-      content: `${MENTION} YA ESTAMOS **EN DIRECTO**! ENTRA Y SALUDA 👋🏼💚`.trim(),
-      embeds: [embed],
-      allowed_mentions: { parse: MENTION ? ["everyone"] : [] },
-    }),
-  });
+  const payload = {
+    username: "Hugx Tattoo Avisos",
+    content: `${MENTION} YA ESTAMOS **EN DIRECTO**! ENTRA Y SALUDA 👋🏼💚`.trim(),
+    embeds: [embed],
+    components: [
+      {
+        type: 1,
+        components: [
+          { type: 2, style: 5, label: "Ir al stream", emoji: { name: "🟢" }, url },
+        ],
+      },
+    ],
+    allowed_mentions: { parse: MENTION ? ["everyone"] : [] },
+  };
+
+  let res = await postToDiscord(payload);
+
+  // Si Discord rechaza el botón, reenvía sin él para no perder el aviso
+  if (!res.ok && res.status === 400) {
+    console.warn(`Botón rechazado (${await res.text()}), reenviando sin botón`);
+    delete payload.components;
+    res = await postToDiscord(payload);
+  }
   if (!res.ok) throw new Error(`Discord: ${res.status} ${await res.text()}`);
 }
 
