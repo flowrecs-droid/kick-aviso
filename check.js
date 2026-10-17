@@ -87,22 +87,10 @@ async function sendDiscord(channel) {
     .replace(/`/g, "\\`")
     .replace(/\|/g, "\\|");
 
-  const viewers = Number(
-    stream.viewer_count ?? stream.viewers ?? channel.viewer_count ?? 0
-  );
-
   // Momento en el que se prepara el aviso.
   const sentUnix = Math.floor(Date.now() / 1000);
 
   const embed = {
-    author: {
-      name: "🔴 HUGX TATTOO • DIRECTO EN KICK",
-      url,
-    },
-
-    title: `🎬 ${safeTitle}`,
-    url,
-
     description: [
       "## ✨ ¡YA ESTAMOS EN DIRECTO!",
       "",
@@ -129,35 +117,18 @@ async function sendDiscord(channel) {
           ]
         : []),
 
-      ...(viewers > 0
-        ? [
-            {
-              name: "👀 VIENDO AHORA",
-              value: `**${viewers.toLocaleString("es-ES")}** espectadores`,
-              inline: true,
-            },
-          ]
-        : []),
-
       {
         name: "🕒 AVISO ENVIADO",
         value: `<t:${sentUnix}:R>`,
         inline: true,
       },
 
-      {
-        name: "💬 CHAT EN VIVO",
-        value: `[**Entrar y saludar ↗**](${url})`,
-        inline: false,
-      },
-    ],
-
     image: {
       url: THUMB_URL,
     },
 
     footer: {
-      text: "Hugx Tattoo • Directo en Kick 💙",
+      text: "Hugx Tattoo @HugxTattoo en Kick 💚",
     },
 
     timestamp: new Date().toISOString(),
