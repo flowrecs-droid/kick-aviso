@@ -117,7 +117,7 @@ async function sendDiscord(channel) {
 
       {
         name: "⏱️  EN DIRECTO DESDE",
-        value: `<t:${startUnix}:R>`,
+        value: new Date().toISOString(),
         inline: true,
       },
 
@@ -140,7 +140,7 @@ async function sendDiscord(channel) {
   const payload = {
     username: "Hugx Tattoo Avisos",
 
-    content: `${MENTION} ¡YA ESTAMOS **EN DIRECTO**! 🎬 Entra y saluda 👋🏼💙`.trim(),
+    content: `${MENTION} ¡YA ESTAMOS **EN DIRECTO**! ENTRA Y SALUDA 👋🏼💚`.trim(),
 
     embeds: [embed],
 
