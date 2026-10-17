@@ -88,7 +88,7 @@ async function sendDiscord(channel) {
       {
         type: 1,
         components: [
-          { type: 2, style: 5, label: "Ir al stream", emoji: { name: "🟢" }, url },
+          { type: 2, style: 5, label: "Ir al stream", emoji: { name: "↪" }, url },
         ],
       },
     ],
